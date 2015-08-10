@@ -1,0 +1,92 @@
+#!/usr/bin/env lua
+
+local split = require( "split" ).split -- TODO remove dependency
+
+--------------------------------------------------------------------------------
+
+local function check_number( i, msg )
+   local n = tonumber( i )
+   if n == nil then
+      print( string.format( "%q is not a number." ) )
+      os.exit( -1 )
+   end
+   return n
+end
+
+local function set( path )
+   -- TODO setenv workaround
+end
+
+--------------------------------------------------------------------------------
+
+local function insert( path, i, pv )
+   -- TODO check i
+   -- TODO check pv
+   table.insert( path, i, pv )
+end
+
+local function list( path )
+   for k,v in ipairs( path ) do
+      print( k, v )
+   end
+end
+
+local function push( path, pv )
+   -- TODO check pv
+   table.insert( path, pv )
+end
+
+local function pushf( path, pv )
+   -- TODO check pv
+   table.insert( path, 1, pv )
+end
+
+local function remove( path, i )
+   -- TODO check i
+   table.remove( path, i )
+end
+
+local function swap( path, i1, i2 )
+   if i1 == nil or i2 == nil then
+      print( "The swap cammand requires two valid index parameter." )
+      print( "Example: pato swap 2 5" )
+      os.exit( -1 )
+   end
+   local n1 = check_number( i1 )
+   local n2 = check_number( i2 )
+   local tmp = path[ n1 ]
+   path[ n1 ] = path[ n2 ]
+   path[ n2 ] = tmp
+end
+
+--------------------------------------------------------------------------------
+
+local path = split( os.getenv( "PATH" ), ":" )
+
+if #arg < 1 then print( "Use at least one subcommand" ) end
+local cmd = arg[ 1 ]
+
+if cmd == "insert" then
+   
+   insert( path, arg[ 2 ], arg[ 3 ] )
+elseif cmd == "list" then
+   list( path )
+elseif cmd == "push" then
+   if #arg < 2 then
+      print( "The push command requires at least one valid path as parameter" )
+      print( "Example: pato push ~/bin" )
+   end
+elseif cmd == "pushf" then
+   if #arg < 2 then
+      print( "The pushf command requires at least one valid path as parameter" )
+      print( "Example: pato pushf ~/bin" )
+   end
+elseif cmd == "remove" then
+   if #arg ~= 2 then
+      print( "The remove command requires one valid index parameter." )
+      print( "Example: pato remove 2" )
+   end
+   remove( path, arg[ 2 ] )
+elseif cmd == "swap" then
+   swap( path, arg[ 2 ], arg[ 3 ] )
+end
