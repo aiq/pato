@@ -2,91 +2,127 @@
 
 local split = require( "split" ).split -- TODO remove dependency
 
+local function logfln( str, ... )
+   return print( str:format( ... ) )
+end
+
+local function errfln( str, ... )
+   return print( "Error:", str:format( ... ) )
+end
+
 --------------------------------------------------------------------------------
 
-local function check_number( i, msg )
+local function check_number( i, tab )
    local n = tonumber( i )
+
    if n == nil then
-      print( string.format( "%q is not a number." ) )
-      os.exit( -1 )
+      errfln( "%q is not a number.", i )
+      os.exit( false )
    end
+
+   if n < 1 and n > #tab then
+      errfln( "%q is out of range[1-%i]", n, #tab )
+      os.exit( false )
+   end
+
    return n
 end
 
-local function set( path )
-   -- TODO setenv workaround
+local function set_path( path )
+   local pathStr = table.concat( path, ":" ) -- TODO handle paths with spaces
+   logfln( pathStr )
 end
 
 --------------------------------------------------------------------------------
 
 local function insert( path, i, pv )
-   -- TODO check i
+   local n = check_number( i, path )
    -- TODO check pv
    table.insert( path, i, pv )
+   set_path( path )
 end
 
 local function list( path )
+   if #path == 0 then
+      logfln( "The PATH is empty" )
+      os.exit( true )
+   end
+
    for k,v in ipairs( path ) do
-      print( k, v )
+      logfln( "%i\t%s", k, v )
    end
 end
 
 local function push( path, pv )
+   if pv == nil then
+      errfln( "The push command requires at least one valid path as parameter" )
+      errfln( "Example: pato push ~/bin" )
+   end
    -- TODO check pv
    table.insert( path, pv )
+   set_path( path )
 end
 
 local function pushf( path, pv )
+   if pv == nil then
+      errfln( "The pushf command requires at least one valid path as parameter" )
+      errfln( "Example: pato pushf ~/bin" )
+      os.exit( false )
+   end
    -- TODO check pv
    table.insert( path, 1, pv )
+   set_path( path )
 end
 
 local function remove( path, i )
-   -- TODO check i
-   table.remove( path, i )
+   if i == nil then
+      errfln( "The remove command requires one valid index parameter." )
+      errfln( "Example: pato remove 2" )
+   end
+   local n = check_number( i, path )
+   table.remove( path, n )
+   set_path( path )
 end
 
 local function swap( path, i1, i2 )
    if i1 == nil or i2 == nil then
-      print( "The swap cammand requires two valid index parameter." )
-      print( "Example: pato swap 2 5" )
-      os.exit( -1 )
+      errfln( "The swap cammand requires two valid index parameter." )
+      errfln( "Example: pato swap 2 5" )
+      os.exit( false )
    end
-   local n1 = check_number( i1 )
-   local n2 = check_number( i2 )
+
+   local n1 = check_number( i1, path )
+   local n2 = check_number( i2, path )
+
    local tmp = path[ n1 ]
    path[ n1 ] = path[ n2 ]
    path[ n2 ] = tmp
+
+   set_path( path )
 end
 
 --------------------------------------------------------------------------------
 
 local path = split( os.getenv( "PATH" ), ":" )
 
-if #arg < 1 then print( "Use at least one subcommand" ) end
+if #arg < 1 then
+   errfln( "Use at least one subcommand" )
+   os.exit( false )
+end
 local cmd = arg[ 1 ]
 
 if cmd == "insert" then
-   
    insert( path, arg[ 2 ], arg[ 3 ] )
 elseif cmd == "list" then
    list( path )
 elseif cmd == "push" then
-   if #arg < 2 then
-      print( "The push command requires at least one valid path as parameter" )
-      print( "Example: pato push ~/bin" )
-   end
+   push( path, arg[ 2 ] )
 elseif cmd == "pushf" then
-   if #arg < 2 then
-      print( "The pushf command requires at least one valid path as parameter" )
-      print( "Example: pato pushf ~/bin" )
-   end
+   pushf( path, arg[ 2 ] )
 elseif cmd == "remove" then
-   if #arg ~= 2 then
-      print( "The remove command requires one valid index parameter." )
-      print( "Example: pato remove 2" )
-   end
    remove( path, arg[ 2 ] )
 elseif cmd == "swap" then
    swap( path, arg[ 2 ], arg[ 3 ] )
+else
+   errfln( "%q is not a valid command", cmd )
 end
