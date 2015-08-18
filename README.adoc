@@ -1,3 +1,18 @@
 = pato
 
+Command-line tool to manipulate the PATH variable.
 
+== Usage
+
+----
+$ PATH=$( pato list )
+$ PATH=$( pato push $PWD )
+$ PATH=$( pato pushf $PWD )
+$ PATH=$( pato insert 2 $PWD )
+$ PATH=$( pato remove 3 )
+$ PATH=$( pato swap 2 6 )
+----
+
+== License
+
+pato is licensed under the MIT Open Source license. For more information, see the LICENSE file in this repository.
