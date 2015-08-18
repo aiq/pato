@@ -2,12 +2,30 @@
 
 local split = require( "split" ).split -- TODO remove dependency
 
+local function string_starts( str, start )
+   return string.sub( str, 1, #start ) == start
+end
+
+local function table_tail( t, n )
+   n = n or 1
+   if # t <= n then return {} end
+
+   local result = {}
+   for i, v in ipairs( t ) do
+      if i > n then
+         table.insert( result, v )
+      end
+   end
+
+   return result
+end 
+
 local function logfln( str, ... )
    return print( str:format( ... ) )
 end
 
 local function errfln( str, ... )
-   return print( "Error:", str:format( ... ) )
+   return io.stderr:write( str:format( ... ), "\n" )
 end
 
 --------------------------------------------------------------------------------
@@ -16,16 +34,37 @@ local function check_number( i, tab )
    local n = tonumber( i )
 
    if n == nil then
-      errfln( "%q is not a number.", i )
+      errfln( "Error: %q is not a number.", i )
       os.exit( false )
    end
 
    if n < 1 and n > #tab then
-      errfln( "%q is out of range[1-%i]", n, #tab )
+      errfln( "Error: %q is out of range[1-%i]", n, #tab )
       os.exit( false )
    end
 
    return n
+end
+
+local function get_path( args )
+   local mode = "-g"
+   if string_starts( args[ 1 ], "-" ) then
+      mode = args[ 1 ]
+      args = table_tail( args )
+   end
+
+   local path = ""
+   if mode == "-g" then
+      path = split( os.getenv( "PATH" ), ":" )
+   elseif mode == "-i" then
+      path = split( io.read(), ":" )
+   else
+      errfln( "Error: %q is not a valid mode to read the PATH", mode )
+      errfln( "Use -g to read the PATH variable or -i to read from the input stream." )
+      errfln( "The default value will be -g" )
+      os.exit( false )
+   end
+   return path, args
 end
 
 local function set_path( path )
@@ -55,7 +94,7 @@ end
 
 local function push( path, pv )
    if pv == nil then
-      errfln( "The push command requires at least one valid path as parameter" )
+      errfln( "Error: The push command requires at least one valid path as parameter" )
       errfln( "Example: pato push ~/bin" )
    end
    -- TODO check pv
@@ -65,7 +104,7 @@ end
 
 local function pushf( path, pv )
    if pv == nil then
-      errfln( "The pushf command requires at least one valid path as parameter" )
+      errfln( "Error: The pushf command requires at least one valid path as parameter" )
       errfln( "Example: pato pushf ~/bin" )
       os.exit( false )
    end
@@ -76,7 +115,7 @@ end
 
 local function remove( path, i )
    if i == nil then
-      errfln( "The remove command requires one valid index parameter." )
+      errfln( "Error: The remove command requires one valid index parameter." )
       errfln( "Example: pato remove 2" )
    end
    local n = check_number( i, path )
@@ -86,7 +125,7 @@ end
 
 local function swap( path, i1, i2 )
    if i1 == nil or i2 == nil then
-      errfln( "The swap cammand requires two valid index parameter." )
+      errfln( "Error: The swap cammand requires two valid index parameter." )
       errfln( "Example: pato swap 2 5" )
       os.exit( false )
    end
@@ -103,26 +142,27 @@ end
 
 --------------------------------------------------------------------------------
 
-local path = split( os.getenv( "PATH" ), ":" )
-
 if #arg < 1 then
-   errfln( "Use at least one subcommand" )
+   errfln( "Error: Use at least one subcommand." )
    os.exit( false )
 end
-local cmd = arg[ 1 ]
+
+local path, args = get_path( arg )
+
+local cmd = args[ 1 ]
 
 if cmd == "insert" then
-   insert( path, arg[ 2 ], arg[ 3 ] )
+   insert( path, args[ 2 ], args[ 3 ] )
 elseif cmd == "list" then
    list( path )
 elseif cmd == "push" then
-   push( path, arg[ 2 ] )
+   push( path, args[ 2 ] )
 elseif cmd == "pushf" then
-   pushf( path, arg[ 2 ] )
+   pushf( path, args[ 2 ] )
 elseif cmd == "remove" then
-   remove( path, arg[ 2 ] )
+   remove( path, args[ 2 ] )
 elseif cmd == "swap" then
-   swap( path, arg[ 2 ], arg[ 3 ] )
+   swap( path, args[ 2 ], args[ 3 ] )
 else
    errfln( "%q is not a valid command", cmd )
 end
