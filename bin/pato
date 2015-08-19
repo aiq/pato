@@ -1,6 +1,32 @@
 #!/usr/bin/env lua
 
-local split = require( "split" ).split -- TODO remove dependency
+-- https://bitbucket.org/telemachus/split/ 
+-- Without delimeter edge cases
+local function string_split( str, delimiter )
+  if str == '' then return {} end
+
+  delimiter = delimiter or '%s+'
+
+  local t = {}
+  local position = 1
+  local s, e = string.find( str, delimiter, position )
+
+  while s do
+     table.insert( t, string.sub( str, position, s-1 ) )
+     position = e + 1
+     s, e = string.find( str, delimiter, position )
+  end
+
+  if position <= #str then
+     table.insert( t, string.sub( str, position ) )
+  end
+
+  if position > #str then
+     table.insert( t, '' )
+  end
+
+  return t
+end
 
 local function string_starts( str, start )
    return string.sub( str, 1, #start ) == start
@@ -55,13 +81,13 @@ local function get_path( args )
 
    local path = ""
    if mode == "-g" then
-      path = split( os.getenv( "PATH" ), ":" )
+      path = string_split( os.getenv( "PATH" ), ":" )
    elseif mode == "-i" then
-      path = split( io.read(), ":" )
+      path = string_split( io.read(), ":" )
    else
       errfln( "Error: %q is not a valid mode to read the PATH", mode )
-      errfln( "Use -g to read the PATH variable or -i to read from the input stream." )
-      errfln( "The default value will be -g" )
+      errfln( "Use -g (PATH variable) or -i (standard input stream)." )
+      errfln( "The default value will be -g." )
       os.exit( false )
    end
    return path, args
