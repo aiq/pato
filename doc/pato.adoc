@@ -1,0 +1,50 @@
+= pato(1)
+
+== NAME
+
+pato - Command-line tool to manipulate a PATH variable.
+
+== SYNOPSIS
+
+----
+*pato* [-e|-i] insert <pos> <path>
+               list
+               push <path>
+               pushf <path>
+               remove <pos>
+               swap <pos> <pos>
+----
+
+== DESCRIPTION
+
+== OPTIONS
+
+-e::
+blabla
+
+-i::
+blabla
+
+== COMMANDS
+
+insert::
+asdf
+
+list::
+asafdg
+
+push::
+asdfagh
+
+pushf::
+asdfasdg
+
+remove::
+sdfag
+
+swap::
+ahffhah
+
+== EXAMPLES
+
+

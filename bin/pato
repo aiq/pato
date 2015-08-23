@@ -73,14 +73,14 @@ local function check_number( i, tab )
 end
 
 local function get_path( args )
-   local mode = "-g"
+   local mode = "-e"
    if string_starts( args[ 1 ], "-" ) then
       mode = args[ 1 ]
       args = table_tail( args )
    end
 
    local path = ""
-   if mode == "-g" then
+   if mode == "-e" then
       path = string_split( os.getenv( "PATH" ), ":" )
    elseif mode == "-i" then
       path = string_split( io.read(), ":" )

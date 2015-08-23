@@ -1,17 +1,47 @@
 = pato
 
-Command-line tool to manipulate the PATH variable.
+Command-line tool to manipulate a PATH variable.
+
+== Motivation
+
+The format of the PATH environment variablei with colon separated values allows you easy to add a new path at the front or end.
+But all other operations(swap, remove) require the help of an editor and some manual moves.
+pato is my approach to solve this problem.
 
 == Usage
 
+List all paths that are stored in a PATH variable:
+
 ----
-$ PATH=$( pato list )
+$ pato -e list                // lists the values from the PATH variable of the environment
+$ pato list                   // same as -e
+$ echo $PATH | pato -i list   // lists the values from the PATH variable from the input stream
+----
+
+Manipulate a PATH variable and set it as the environment PATH variable:
+
+----
 $ PATH=$( pato push $PWD )
 $ PATH=$( pato pushf $PWD )
 $ PATH=$( pato insert 2 $PWD )
 $ PATH=$( pato remove 3 )
 $ PATH=$( pato swap 2 6 )
 ----
+
+All commands that manipulate a PATH variable write the result as a line to the output stream.
+So it is easy to chain commands together:
+
+----
+$ PATH=$( pato push $PWD | pato -i push $PWD/bin | pato -i push $PWD/tools )
+----
+
+Check the manpage in the doc directory for further information about the usage.
+
+== Installation
+
+=== Manual
+
+=== LuaRocks
 
 == License
 
