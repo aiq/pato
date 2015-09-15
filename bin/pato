@@ -102,7 +102,7 @@ end
 
 local function insert( path, i, pv )
    if i == nil or pv == nil then
-      errfln( "Error: The insert command requires valid index and path as parameter." )
+      errfln( "Error: The insert command requires a valid index and path as parameter." )
       errfln( "Example: pato insert 4 ~/bin" )
       os.exit( false )
    end
