@@ -63,9 +63,9 @@ local function check_number( i, tab )
       errfln( "Error: %q is not a number.", i )
       os.exit( false )
    end
-
-   if n < 1 and n > #tab then
-      errfln( "Error: %q is out of range[1-%i]", n, #tab )
+   
+   if n < 1 or n > #tab then
+      errfln( "Error: %q is out of range[1-%i].", n, #tab )
       os.exit( false )
    end
 
@@ -85,7 +85,7 @@ local function get_path( args )
    elseif mode == "-i" then
       path = string_split( io.read(), ":" )
    else
-      errfln( "Error: %q is not a valid mode to read the PATH", mode )
+      errfln( "Error: %q is not a valid mode to read the PATH.", mode )
       errfln( "Use -g (PATH variable) or -i (standard input stream)." )
       errfln( "The default value will be -g." )
       os.exit( false )
@@ -101,6 +101,11 @@ end
 --------------------------------------------------------------------------------
 
 local function insert( path, i, pv )
+   if i == nil or pv == nil then
+      errfln( "Error: The insert command requires valid index and path as parameter." )
+      errfln( "Example: pato insert 4 ~/bin" )
+      os.exit( false )
+   end
    local n = check_number( i, path )
    -- TODO check pv
    table.insert( path, i, pv )
@@ -109,8 +114,8 @@ end
 
 local function list( path )
    if #path == 0 then
-      logfln( "The PATH is empty" )
-      os.exit( true )
+      logfln( "The PATH is empty." )
+      os.exit( false )
    end
 
    for k,v in ipairs( path ) do
@@ -120,8 +125,9 @@ end
 
 local function push( path, pv )
    if pv == nil then
-      errfln( "Error: The push command requires at least one valid path as parameter" )
+      errfln( "Error: The push command requires one valid path as parameter." )
       errfln( "Example: pato push ~/bin" )
+      os.exit( false )
    end
    -- TODO check pv
    table.insert( path, pv )
@@ -130,7 +136,7 @@ end
 
 local function pushf( path, pv )
    if pv == nil then
-      errfln( "Error: The pushf command requires at least one valid path as parameter" )
+      errfln( "Error: The pushf command requires one valid path as parameter." )
       errfln( "Example: pato pushf ~/bin" )
       os.exit( false )
    end
@@ -143,6 +149,7 @@ local function remove( path, i )
    if i == nil then
       errfln( "Error: The remove command requires one valid index parameter." )
       errfln( "Example: pato remove 2" )
+      os.exit( false )
    end
    local n = check_number( i, path )
    table.remove( path, n )
@@ -151,7 +158,7 @@ end
 
 local function swap( path, i1, i2 )
    if i1 == nil or i2 == nil then
-      errfln( "Error: The swap cammand requires two valid index parameter." )
+      errfln( "Error: The swap command requires two valid index parameter." )
       errfln( "Example: pato swap 2 5" )
       os.exit( false )
    end
@@ -190,5 +197,5 @@ elseif cmd == "remove" then
 elseif cmd == "swap" then
    swap( path, args[ 2 ], args[ 3 ] )
 else
-   errfln( "%q is not a valid command", cmd )
+   errfln( "Error: %q is not a valid command.", cmd )
 end
