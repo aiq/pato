@@ -1,0 +1,76 @@
+
+= pato(1)
+
+== NAME
+
+pato - Command-line tool to manipulate a PATH variable.
+
+== SYNOPSIS
+
+----
+*pato* [-e|-i] insert <pos> <path>
+               list
+               push <path>
+               pushf <path>
+               remove <pos>
+               swap <pos1> <pos2>
+----
+
+== DESCRIPTION
+
+The format of the PATH environment variable with colon separated values allows you easy to add a new path at the front or end.
+But all other operations(swap, remove) require the help of an editor and some manual moves.
+pato is my approach to solve this problem.
+
+All commands that manipulate a PATH variable write the new PATH variable as result to the output stream.
+
+== OPTIONS
+
+-e::
+read the PATH variable from the current environment
+
+-i::
+read the PATH variable from the standart input
+
+== COMMANDS
+
+insert::
+Inserts the _<path>_ value before the element at the specified position _<pos>_ from the PATH variable.
+
+list::
+Prints all path values from a PATH variable to get a better overview.
+
+push::
+Adds a _<path>_ value at the end of the PATH variable.
+
+pushf::
+Adds a _<path>_ value at the front of the PATH variable.
+
+remove::
+Removes the path value at the position _<pos>_ from the PATH variable.
+
+swap::
+Swaps the value at the position _<pos1>_ with the value at the position _<pos2>_.
+
+== EXAMPLES
+
+List all values from the PATH variable of the environment.
+----
+$ pato -e list
+$ pato list
+----
+
+Add a path as last element of the PATH variable and set it as the new PATH variable of the environment.
+----
+$ PATH=$( pato push $PWD )
+----
+
+Remove the third element of the PATH variable and list the values of the new PATH variable.
+----
+$ pato remove 3 | pato -i list
+----
+
+== AUTHOR
+
+Written by Alexander Schulz.
+ pato(1)

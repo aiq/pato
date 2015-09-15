@@ -3,29 +3,29 @@
 -- https://bitbucket.org/telemachus/split/ 
 -- Without delimeter edge cases
 local function string_split( str, delimiter )
-  if str == '' then return {} end
+   if str == '' then return {} end
 
-  delimiter = delimiter or '%s+'
+   delimiter = delimiter or '%s+'
 
-  local t = {}
-  local position = 1
-  local s, e = string.find( str, delimiter, position )
+   local t = {}
+   local position = 1
+   local s, e = string.find( str, delimiter, position )
 
-  while s do
-     table.insert( t, string.sub( str, position, s-1 ) )
-     position = e + 1
-     s, e = string.find( str, delimiter, position )
-  end
+   while s do
+      table.insert( t, string.sub( str, position, s-1 ) )
+      position = e + 1
+      s, e = string.find( str, delimiter, position )
+   end
 
-  if position <= #str then
-     table.insert( t, string.sub( str, position ) )
-  end
+   if position <= #str then
+      table.insert( t, string.sub( str, position ) )
+   end
 
-  if position > #str then
-     table.insert( t, '' )
-  end
+   if position > #str then
+      table.insert( t, '' )
+   end
 
-  return t
+   return t
 end
 
 local function string_starts( str, start )
@@ -73,14 +73,14 @@ local function check_number( i, tab )
 end
 
 local function get_path( args )
-   local mode = "-g"
+   local mode = "-e"
    if string_starts( args[ 1 ], "-" ) then
       mode = args[ 1 ]
       args = table_tail( args )
    end
 
    local path = ""
-   if mode == "-g" then
+   if mode == "-e" then
       path = string_split( os.getenv( "PATH" ), ":" )
    elseif mode == "-i" then
       path = string_split( io.read(), ":" )
