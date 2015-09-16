@@ -1,4 +1,3 @@
-
 = pato(1)
 
 == NAME
@@ -20,17 +19,17 @@ pato - Command-line tool to manipulate a PATH variable.
 
 The format of the PATH environment variable with colon separated values allows you easy to add a new path at the front or end.
 But all other operations(swap, remove) require the help of an editor and some manual moves.
-pato is my approach to solve this problem.
+pato is an approach to solve this problem.
 
 All commands that manipulate a PATH variable write the new PATH variable as result to the output stream.
 
 == OPTIONS
 
 -e::
-read the PATH variable from the current environment
+Read the PATH variable from the current environment. This is also the default option.
 
 -i::
-read the PATH variable from the standart input
+Read the PATH variable from the standart input.
 
 == COMMANDS
 
@@ -73,4 +72,3 @@ $ pato remove 3 | pato -i list
 == AUTHOR
 
 Written by Alexander Schulz.
- pato(1)
