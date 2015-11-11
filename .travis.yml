@@ -15,10 +15,9 @@ branches:
       - master
 
 before_install:
-   - pip install hererocks
+   - sudo pip install hererocks
    - hererocks base -r^ --$LUA
    - export PATH=$PATH:$PWD/base/bin
-   - luarocks install busted
    - sudo add-apt-repository ppa:duggan/bats --yes
    - sudo apt-get update -qq
    - sudo apt-get install -qq bats
