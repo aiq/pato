@@ -39,9 +39,11 @@ Check the manpage in the doc directory for further information about the usage.
 
 == Installation
 
-=== Manual
+Use just the following line.
 
-=== LuaRocks
+----
+luarocks install pato
+----
 
 == License
 
