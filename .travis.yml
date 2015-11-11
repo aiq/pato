@@ -1,5 +1,7 @@
 language: python
 
+sudo: false
+
 env:
    matrix:
       - LUA="lua=5.1"
