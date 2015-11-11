@@ -1,4 +1,4 @@
-language: bash
+language: python
 
 env:
    matrix:
@@ -13,7 +13,7 @@ branches:
       - master
 
 before_install:
-   - sudo pip install hererocks
+   - pip install hererocks
    - hererocks base -r^ --$LUA
    - export PATH=$PATH:$PWD/base/bin
    - sudo add-apt-repository ppa:duggan/bats --yes
