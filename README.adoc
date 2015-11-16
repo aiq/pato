@@ -1,5 +1,7 @@
 = pato
 
+image::https://api.travis-ci.org/aiq/pato.png[travis]
+
 Command-line tool to manipulate a PATH variable.
 
 == Motivation
