@@ -39,10 +39,17 @@ Check the manpage in the doc directory for further information about the usage.
 
 == Installation
 
-Use just the following line.
+Use just the following line to get the latest release.
 
 ----
 luarocks install pato
+----
+
+If you want to use the current development version, clone this repository and use
+LuaRocks with the following command.
+
+----
+luarocks make dist/pato-scm-0.rockspec
 ----
 
 == License

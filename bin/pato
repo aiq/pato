@@ -1,5 +1,9 @@
 #!/usr/bin/env lua
 
+local function errexit()
+   os.exit( 1 )
+end
+
 -- https://bitbucket.org/telemachus/split/ 
 -- Without delimeter edge cases
 local function string_split( str, delimiter )
@@ -61,12 +65,12 @@ local function check_number( i, tab )
 
    if n == nil then
       errfln( "Error: %q is not a number.", i )
-      os.exit( false )
+      errexit()
    end
    
    if n < 1 or n > #tab then
       errfln( "Error: %q is out of range[1-%i].", n, #tab )
-      os.exit( false )
+      errexit()
    end
 
    return n
@@ -88,7 +92,7 @@ local function get_path( args )
       errfln( "Error: %q is not a valid mode to read the PATH.", mode )
       errfln( "Use -g (PATH variable) or -i (standard input stream)." )
       errfln( "The default value will be -g." )
-      os.exit( false )
+      errexit()
    end
    return path, args
 end
@@ -104,7 +108,7 @@ local function insert( path, i, pv )
    if i == nil or pv == nil then
       errfln( "Error: The insert command requires a valid index and path as parameter." )
       errfln( "Example: pato insert 4 ~/bin" )
-      os.exit( false )
+      errexit()
    end
    local n = check_number( i, path )
    -- TODO check pv
@@ -115,7 +119,7 @@ end
 local function list( path )
    if #path == 0 then
       logfln( "The PATH is empty." )
-      os.exit( false )
+      errexit()
    end
 
    for k,v in ipairs( path ) do
@@ -127,7 +131,7 @@ local function push( path, pv )
    if pv == nil then
       errfln( "Error: The push command requires one valid path as parameter." )
       errfln( "Example: pato push ~/bin" )
-      os.exit( false )
+      errexit()
    end
    -- TODO check pv
    table.insert( path, pv )
@@ -138,7 +142,7 @@ local function pushf( path, pv )
    if pv == nil then
       errfln( "Error: The pushf command requires one valid path as parameter." )
       errfln( "Example: pato pushf ~/bin" )
-      os.exit( false )
+      errexit()
    end
    -- TODO check pv
    table.insert( path, 1, pv )
@@ -149,7 +153,7 @@ local function remove( path, i )
    if i == nil then
       errfln( "Error: The remove command requires one valid index parameter." )
       errfln( "Example: pato remove 2" )
-      os.exit( false )
+      errexit()
    end
    local n = check_number( i, path )
    table.remove( path, n )
@@ -160,7 +164,7 @@ local function swap( path, i1, i2 )
    if i1 == nil or i2 == nil then
       errfln( "Error: The swap command requires two valid index parameter." )
       errfln( "Example: pato swap 2 5" )
-      os.exit( false )
+      errexit()
    end
 
    local n1 = check_number( i1, path )
@@ -177,7 +181,7 @@ end
 
 if #arg < 1 then
    errfln( "Error: Use at least one subcommand." )
-   os.exit( false )
+   errexit()
 end
 
 local path, args = get_path( arg )
@@ -198,4 +202,5 @@ elseif cmd == "swap" then
    swap( path, args[ 2 ], args[ 3 ] )
 else
    errfln( "Error: %q is not a valid command.", cmd )
+   errexit()
 end
