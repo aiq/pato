@@ -17,6 +17,7 @@ dependencies = {
 
 build = {
    type = "builtin",
+   modules = {},
    install = {
       bin = {
          [ "pato" ] = "bin/pato"
