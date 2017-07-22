@@ -104,7 +104,19 @@ end
 
 --------------------------------------------------------------------------------
 
-local function insert( path, i, pv )
+if #arg < 1 then
+   errfln( "Error: Use at least one subcommand." )
+   errexit()
+end
+
+local path, args = get_path( arg )
+
+local cmd = args[ 1 ]
+
+--------------------------------------------------------------------------insert
+if cmd == "insert" then
+   local i = args[ 2 ]
+   local pv = args[ 3 ]
    if i == nil or pv == nil then
       errfln( "Error: The insert command requires a valid index and path as parameter." )
       errfln( "Example: pato insert 4 ~/bin" )
@@ -114,9 +126,9 @@ local function insert( path, i, pv )
    -- TODO check pv
    table.insert( path, i, pv )
    set_path( path )
-end
 
-local function list( path )
+----------------------------------------------------------------------------list
+elseif cmd == "list" then
    if #path == 0 then
       logfln( "The PATH is empty." )
       errexit()
@@ -125,9 +137,10 @@ local function list( path )
    for k,v in ipairs( path ) do
       logfln( "%i\t%s", k, v )
    end
-end
 
-local function push( path, pv )
+----------------------------------------------------------------------------push
+elseif cmd == "push" then
+   local pv = args[ 2 ]
    if pv == nil then
       errfln( "Error: The push command requires one valid path as parameter." )
       errfln( "Example: pato push ~/bin" )
@@ -136,9 +149,10 @@ local function push( path, pv )
    -- TODO check pv
    table.insert( path, pv )
    set_path( path )
-end
 
-local function pushf( path, pv )
+---------------------------------------------------------------------------pushf
+elseif cmd == "pushf" then
+   local pv = args[ 2 ]
    if pv == nil then
       errfln( "Error: The pushf command requires one valid path as parameter." )
       errfln( "Example: pato pushf ~/bin" )
@@ -147,9 +161,10 @@ local function pushf( path, pv )
    -- TODO check pv
    table.insert( path, 1, pv )
    set_path( path )
-end
 
-local function remove( path, i )
+--------------------------------------------------------------------------remove
+elseif cmd == "remove" then
+   local i = args[ 2 ]
    if i == nil then
       errfln( "Error: The remove command requires one valid index parameter." )
       errfln( "Example: pato remove 2" )
@@ -158,9 +173,11 @@ local function remove( path, i )
    local n = check_number( i, path )
    table.remove( path, n )
    set_path( path )
-end
 
-local function swap( path, i1, i2 )
+----------------------------------------------------------------------------swap
+elseif cmd == "swap" then
+   local i1 = args[ 2 ]
+   local i2 = args[ 3 ]
    if i1 == nil or i2 == nil then
       errfln( "Error: The swap command requires two valid index parameter." )
       errfln( "Example: pato swap 2 5" )
@@ -175,31 +192,8 @@ local function swap( path, i1, i2 )
    path[ n2 ] = tmp
 
    set_path( path )
-end
 
---------------------------------------------------------------------------------
-
-if #arg < 1 then
-   errfln( "Error: Use at least one subcommand." )
-   errexit()
-end
-
-local path, args = get_path( arg )
-
-local cmd = args[ 1 ]
-
-if cmd == "insert" then
-   insert( path, args[ 2 ], args[ 3 ] )
-elseif cmd == "list" then
-   list( path )
-elseif cmd == "push" then
-   push( path, args[ 2 ] )
-elseif cmd == "pushf" then
-   pushf( path, args[ 2 ] )
-elseif cmd == "remove" then
-   remove( path, args[ 2 ] )
-elseif cmd == "swap" then
-   swap( path, args[ 2 ], args[ 3 ] )
+---------------------------------------------------------------------------error
 else
    errfln( "Error: %q is not a valid command.", cmd )
    errexit()
