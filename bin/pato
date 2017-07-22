@@ -36,20 +36,6 @@ local function string_starts( str, start )
    return string.sub( str, 1, #start ) == start
 end
 
-local function table_tail( t, n )
-   n = n or 1
-   if # t <= n then return {} end
-
-   local result = {}
-   for i, v in ipairs( t ) do
-      if i > n then
-         table.insert( result, v )
-      end
-   end
-
-   return result
-end 
-
 local function logfln( str, ... )
    return print( str:format( ... ) )
 end
@@ -76,11 +62,14 @@ local function check_number( i, tab )
    return n
 end
 
+local function popfront( tab )
+   return table.remove( tab, 1 )
+end
+
 local function get_path( args )
    local mode = "-e"
    if string_starts( args[ 1 ], "-" ) then
-      mode = args[ 1 ]
-      args = table_tail( args )
+      mode = popfront( args )
    end
 
    local path = ""
@@ -104,19 +93,19 @@ end
 
 --------------------------------------------------------------------------------
 
-if #arg < 1 then
+local path, args = get_path( arg )
+
+if #args < 1 then
    errfln( "Error: Use at least one subcommand." )
    errexit()
 end
 
-local path, args = get_path( arg )
-
-local cmd = args[ 1 ]
+local cmd = popfront( args )
 
 --------------------------------------------------------------------------insert
 if cmd == "insert" then
-   local i = args[ 2 ]
-   local pv = args[ 3 ]
+   local i = popfront( args )
+   local pv = popfront( args )
    if i == nil or pv == nil then
       errfln( "Error: The insert command requires a valid index and path as parameter." )
       errfln( "Example: pato insert 4 ~/bin" )
@@ -140,7 +129,7 @@ elseif cmd == "list" then
 
 ----------------------------------------------------------------------------push
 elseif cmd == "push" then
-   local pv = args[ 2 ]
+   local pv = popfront( args )
    if pv == nil then
       errfln( "Error: The push command requires one valid path as parameter." )
       errfln( "Example: pato push ~/bin" )
@@ -152,7 +141,7 @@ elseif cmd == "push" then
 
 ---------------------------------------------------------------------------pushf
 elseif cmd == "pushf" then
-   local pv = args[ 2 ]
+   local pv = popfront( args )
    if pv == nil then
       errfln( "Error: The pushf command requires one valid path as parameter." )
       errfln( "Example: pato pushf ~/bin" )
@@ -164,7 +153,7 @@ elseif cmd == "pushf" then
 
 --------------------------------------------------------------------------remove
 elseif cmd == "remove" then
-   local i = args[ 2 ]
+   local i = popfront( args )
    if i == nil then
       errfln( "Error: The remove command requires one valid index parameter." )
       errfln( "Example: pato remove 2" )
@@ -176,8 +165,8 @@ elseif cmd == "remove" then
 
 ----------------------------------------------------------------------------swap
 elseif cmd == "swap" then
-   local i1 = args[ 2 ]
-   local i2 = args[ 3 ]
+   local i1 = popfront( args )
+   local i2 = popfront( args )
    if i1 == nil or i2 == nil then
       errfln( "Error: The swap command requires two valid index parameter." )
       errfln( "Example: pato swap 2 5" )
