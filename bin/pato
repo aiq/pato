@@ -68,7 +68,7 @@ end
 
 local function get_path( args )
    local mode = "-e"
-   if string_starts( args[ 1 ], "-" ) then
+   if #args > 0 and string_starts( args[ 1 ], "-" ) then
       mode = popfront( args )
    end
 
@@ -91,12 +91,29 @@ local function set_path( path )
    logfln( pathStr )
 end
 
+local function usage()
+   return [[pato [-e|-i] insert <pos> <path>  - inserts a <path> before <pos>
+             list                 - list all paths in the PATH variable
+             push <path>          - adds <path> at the end
+             pushf <path>         - adds <path> at the front
+             remove <pos>         - removes the path at <pos>
+             swap <pos1> <pos2>   - swaps the values at <pos1> and <pos2>
+             usage                - prints a short usage overview
+
+Examples:
+   $ pato list
+   $ pato -e list
+   $ PATH=$( pato push $PWD)
+   $ pato remove 3 | pato -i list]]
+end
+
 --------------------------------------------------------------------------------
 
 local path, args = get_path( arg )
 
 if #args < 1 then
    errfln( "Error: Use at least one subcommand." )
+   errfln( usage() )
    errexit()
 end
 
@@ -181,6 +198,10 @@ elseif cmd == "swap" then
    path[ n2 ] = tmp
 
    set_path( path )
+
+---------------------------------------------------------------------------usage
+elseif cmd == "usage" then
+   print( usage() )
 
 ---------------------------------------------------------------------------error
 else
