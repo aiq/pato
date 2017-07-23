@@ -1,39 +1,48 @@
 #!/usr/bin/env lua
 
+--------------------------------------------------------------------------------
+--LuaZDF-begin --with explode startswith
+--------------------------------------------------------------------------------
+--ZFUNC-explode-v1
+local function explode( str, delimiter, limit )
+   limit = limit or 4294967296
+   if limit == 0 then limit = 1 end
+   if limit == 1 then return { str } end
+   local tab = {}
+   local position = 1
+   local s, e = string.find( str, delimiter, position, true )
+   local cond = function( s, i ) return s end
+   if limit > 0 then
+      cond = function( s, i ) return s and i < limit - 1 end
+   end
+   while cond( s, #tab ) do
+      table.insert( tab, string.sub( str, position, s-1 ) )
+      position = e + 1
+      s, e = string.find( str, delimiter, position, true )
+   end
+   if position <= #str then
+      table.insert( tab, string.sub( str, position ) )
+   end
+   if position > #str then
+      table.insert( tab, "" )
+   end
+   if limit < 0 then
+      for i = 1, math.abs( limit ) do
+         table.remove( tab )
+      end
+   end
+   return tab
+end
+--ZFUNC-startswith-v1
+local function startswith( str, prefix )
+   return string.sub( str, 1, string.len( prefix ) ) == prefix
+end
+--------------------------------------------------------------------------------
+--LuaZDF-end
+--------------------------------------------------------------------------------
+
 local function errexit()
    os.exit( 1 )
-end
-
--- https://bitbucket.org/telemachus/split/ 
--- Without delimeter edge cases
-local function string_split( str, delimiter )
-   if str == '' then return {} end
-
-   delimiter = delimiter or '%s+'
-
-   local t = {}
-   local position = 1
-   local s, e = string.find( str, delimiter, position )
-
-   while s do
-      table.insert( t, string.sub( str, position, s-1 ) )
-      position = e + 1
-      s, e = string.find( str, delimiter, position )
-   end
-
-   if position <= #str then
-      table.insert( t, string.sub( str, position ) )
-   end
-
-   if position > #str then
-      table.insert( t, '' )
-   end
-
-   return t
-end
-
-local function string_starts( str, start )
-   return string.sub( str, 1, #start ) == start
 end
 
 local function logfln( str, ... )
@@ -68,15 +77,15 @@ end
 
 local function get_path( args )
    local mode = "-e"
-   if #args > 0 and string_starts( args[ 1 ], "-" ) then
+   if #args > 0 and startswith( args[ 1 ], "-" ) then
       mode = popfront( args )
    end
 
    local path = ""
    if mode == "-e" then
-      path = string_split( os.getenv( "PATH" ), ":" )
+      path = explode( os.getenv( "PATH" ), ":" )
    elseif mode == "-i" then
-      path = string_split( io.read(), ":" )
+      path = explode( io.read(), ":" )
    else
       errfln( "Error: %q is not a valid mode to read the PATH.", mode )
       errfln( "Use -g (PATH variable) or -i (standard input stream)." )
