@@ -64,7 +64,7 @@ local function check_number( i, tab )
    end
    
    if n < 1 or n > #tab then
-      errfln( "Error: %q is out of range[1-%i].", n, #tab )
+      errfln( 'Error: "%d" is out of range[1-%d].', n, #tab )
       errexit()
    end
 
